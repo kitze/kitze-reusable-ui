@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   check:
-    runs-on: [self-hosted, Linux, X64, pop-os]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -25,7 +25,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main'
     needs: check
-    runs-on: [self-hosted, Linux, X64, pop-os]
+    runs-on: ubuntu-latest
     permissions:
       pages: write
       id-token: write
