@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "footer-column-kitze-apps",
+  "title": "My apps",
+  "description": "A footer column of my apps, with current-app exclusion and referral links.",
+  "dependencies": [
+    "lucide-react"
+  ],
+  "registryDependencies": [
+    "https://kitze.github.io/kitze-reusable-ui/r/kitze-apps-provider.json"
+  ],
+  "files": [
+    {
+      "path": "registry/new-york/footer-column-kitze-apps/FooterColumnKitzeApps.tsx",
+      "content": "\"use client\";\n\nimport { ExternalLink } from \"lucide-react\";\n\nimport { useKitzeApps } from \"@/components/ui/KitzeAppsProvider\";\nimport { cn } from \"@/lib/utils\";\n\nexport interface KitzeAppLink {\n  name: string;\n  url: string;\n}\n\nexport interface FooterColumnKitzeAppsProps {\n  /** App name to exclude from the list (typically the current app) */\n  excludeApp?: string;\n  /** Ref parameter to append to URLs */\n  refParam?: string;\n  /** Custom apps list (overrides fetched) */\n  apps?: KitzeAppLink[];\n  /** Custom title */\n  title?: string;\n  /** Additional className */\n  className?: string;\n}\n\nexport const FooterColumnKitzeApps = ({\n  excludeApp,\n  refParam,\n  apps: customApps,\n  title = \"More by Kitze\",\n  className,\n}: FooterColumnKitzeAppsProps) => {\n  const { apps: fetchedApps, isLoading } = useKitzeApps();\n\n  const apps =\n    customApps || fetchedApps.map((a) => ({ name: a.name, url: a.url }));\n  const filteredApps = excludeApp\n    ? apps.filter((app) => app.name.toLowerCase() !== excludeApp.toLowerCase())\n    : apps;\n\n  const getUrl = (url: string) => {\n    if (!refParam) {\n      return url;\n    }\n    const separator = url.includes(\"?\") ? \"&\" : \"?\";\n    return `${url}${separator}ref=${refParam}`;\n  };\n\n  if (isLoading && !customApps) {\n    return null;\n  }\n\n  return (\n    <div className={cn(\"space-y-4\", className)}>\n      <h4 className=\"flex items-center gap-2 text-sm font-semibold text-white\">\n        {title}\n        <span className=\"text-[10px] font-normal text-zinc-600\">&#8599;</span>\n      </h4>\n      <div className=\"flex flex-col gap-3 text-sm text-zinc-500\">\n        {filteredApps.map((app) => (\n          <a\n            key={app.name}\n            href={getUrl(app.url)}\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n            className=\"group flex cursor-pointer items-center gap-1 transition-colors hover:text-white\"\n          >\n            {app.name}\n            <ExternalLink className=\"h-3 w-3 opacity-0 transition-opacity group-hover:opacity-50\" />\n          </a>\n        ))}\n      </div>\n    </div>\n  );\n};\n",
+      "type": "registry:component",
+      "target": "components/ui/FooterColumnKitzeApps.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

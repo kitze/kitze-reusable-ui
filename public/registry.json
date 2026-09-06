@@ -1,0 +1,105 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "kitze-reusable-ui",
+  "homepage": "https://kitze.github.io/kitze-reusable-ui",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "made-by-kitze",
+      "title": "Made by Kitze",
+      "description": "The maker section, project cards, and social links for my sites.",
+      "dependencies": [
+        "motion",
+        "lucide-react",
+        "@icons-pack/react-simple-icons"
+      ],
+      "registryDependencies": [
+        "https://kitze.github.io/kitze-reusable-ui/r/kitze-apps-provider.json",
+        "https://ui.kitze.io/r/spinner.json"
+      ],
+      "files": [
+        {
+          "path": "registry/new-york/made-by-kitze/MadeByKitze.tsx",
+          "content": "\"use client\";\n\nimport { SiGithub, SiX, SiYoutube } from \"@icons-pack/react-simple-icons\";\nimport { ExternalLink } from \"lucide-react\";\nimport { motion } from \"motion/react\";\nimport Image from \"next/image\";\n\nimport { Spinner } from \"@/components/Spinner\";\nimport type { KitzeApp } from \"@/components/ui/KitzeAppsProvider\";\nimport { useKitzeApps } from \"@/components/ui/KitzeAppsProvider\";\nimport { cn } from \"@/lib/utils\";\n\nconst socials = [\n  {\n    icon: SiX,\n    name: \"X\",\n    url: \"https://x.com/thekitze\",\n  },\n  {\n    icon: SiGithub,\n    name: \"GitHub\",\n    url: \"https://github.com/kitze\",\n  },\n  {\n    icon: SiYoutube,\n    name: \"YouTube\",\n    url: \"https://youtube.com/@thekitze\",\n  },\n];\nexport interface MadeByKitzeProps {\n  /** App name to exclude from the list (typically the current app) */\n  excludeApp?: string;\n  /** Custom apps list (overrides fetched) */\n  apps?: KitzeApp[];\n  /** Additional className */\n  className?: string;\n  /** Profile image URL */\n  profileImage?: string;\n  /** Show \"View all projects\" link */\n  showViewAll?: boolean;\n}\nexport const MadeByKitze = ({\n  excludeApp,\n  apps: customApps,\n  className,\n  profileImage = \"https://www.kitze.io/avatar.jpg\",\n  showViewAll = true,\n}: MadeByKitzeProps) => {\n  const { apps: fetchedApps, isLoading } = useKitzeApps();\n  const apps = customApps || fetchedApps;\n  const filteredApps = excludeApp\n    ? apps.filter((app) => app.name.toLowerCase() !== excludeApp.toLowerCase())\n    : apps;\n  if (isLoading && !customApps) {\n    return (\n      <div className=\"flex justify-center p-8\" aria-label=\"Loading projects\">\n        <Spinner />\n      </div>\n    );\n  }\n  return (\n    <section\n      className={cn(\n        \"border-t border-white/5 bg-black py-24 md:py-32\",\n        className\n      )}\n    >\n      <div className=\"container mx-auto px-6 md:px-12 lg:px-20\">\n        {/* Header */}\n        <div className=\"mb-16 flex items-center gap-6\">\n          <Image\n            unoptimized\n            width={80}\n            height={80}\n            src={profileImage}\n            alt=\"Kitze\"\n            className=\"h-20 w-20 rounded-full border border-white/10\"\n          />\n          <div>\n            <div className=\"mb-1 text-xs font-medium tracking-widest text-zinc-500 uppercase\">\n              From the maker\n            </div>\n            <a\n              href=\"https://kitze.io\"\n              target=\"_blank\"\n              rel=\"noopener noreferrer\"\n              className=\"transition-opacity hover:opacity-80\"\n            >\n              <h2 className=\"mb-3 text-3xl font-bold tracking-tight text-white\">\n                More by Kitze\n              </h2>\n            </a>\n\n            <div className=\"flex items-center gap-1\">\n              {socials.map((social) => (\n                <a\n                  key={social.name}\n                  href={social.url}\n                  target=\"_blank\"\n                  rel=\"noopener noreferrer\"\n                  className=\"cursor-pointer rounded-lg p-1.5 text-zinc-500 transition-all hover:bg-white/5 hover:text-white\"\n                  aria-label={social.name}\n                >\n                  <social.icon className=\"h-4 w-4\" />\n                </a>\n              ))}\n            </div>\n          </div>\n        </div>\n\n        {/* Grid */}\n        <div className=\"grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3\">\n          {filteredApps.map((app, index) => (\n            <motion.a\n              key={app.name}\n              href={app.url}\n              target=\"_blank\"\n              rel=\"noopener noreferrer\"\n              initial={{\n                opacity: 0,\n                y: 20,\n              }}\n              whileInView={{\n                opacity: 1,\n                y: 0,\n              }}\n              viewport={{\n                once: true,\n              }}\n              transition={{\n                delay: index * 0.05,\n              }}\n              className=\"group flex cursor-pointer flex-col rounded-xl border border-white/5 bg-zinc-900/20 p-6 transition-all duration-300 hover:border-white/10 hover:bg-zinc-900/40\"\n            >\n              <div className=\"mb-4 flex items-start justify-between\">\n                <h3 className=\"text-lg font-semibold text-zinc-200 transition-colors group-hover:text-white\">\n                  {app.name}\n                </h3>\n                <ExternalLink className=\"h-4 w-4 text-zinc-700 transition-colors group-hover:text-zinc-500\" />\n              </div>\n\n              <p className=\"mb-2 text-sm font-medium text-zinc-400 transition-colors group-hover:text-zinc-300\">\n                {app.tagline}\n              </p>\n\n              <p className=\"line-clamp-2 text-sm leading-relaxed text-zinc-500\">\n                {app.description}\n              </p>\n            </motion.a>\n          ))}\n        </div>\n\n        {/* Footer Link */}\n        {showViewAll && (\n          <div className=\"mt-16 text-center\">\n            <a\n              href=\"https://kitze.io/projects\"\n              target=\"_blank\"\n              rel=\"noopener noreferrer\"\n              className=\"inline-flex items-center gap-2 text-sm text-zinc-600 transition-colors hover:text-zinc-400\"\n            >\n              View all projects <ExternalLink className=\"h-3 w-3\" />\n            </a>\n          </div>\n        )}\n      </div>\n    </section>\n  );\n};\n",
+          "type": "registry:component",
+          "target": "components/ui/MadeByKitze.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "footer-column-kitze-apps",
+      "title": "My apps",
+      "description": "A footer column of my apps, with current-app exclusion and referral links.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "registryDependencies": [
+        "https://kitze.github.io/kitze-reusable-ui/r/kitze-apps-provider.json"
+      ],
+      "files": [
+        {
+          "path": "registry/new-york/footer-column-kitze-apps/FooterColumnKitzeApps.tsx",
+          "content": "\"use client\";\n\nimport { ExternalLink } from \"lucide-react\";\n\nimport { useKitzeApps } from \"@/components/ui/KitzeAppsProvider\";\nimport { cn } from \"@/lib/utils\";\n\nexport interface KitzeAppLink {\n  name: string;\n  url: string;\n}\n\nexport interface FooterColumnKitzeAppsProps {\n  /** App name to exclude from the list (typically the current app) */\n  excludeApp?: string;\n  /** Ref parameter to append to URLs */\n  refParam?: string;\n  /** Custom apps list (overrides fetched) */\n  apps?: KitzeAppLink[];\n  /** Custom title */\n  title?: string;\n  /** Additional className */\n  className?: string;\n}\n\nexport const FooterColumnKitzeApps = ({\n  excludeApp,\n  refParam,\n  apps: customApps,\n  title = \"More by Kitze\",\n  className,\n}: FooterColumnKitzeAppsProps) => {\n  const { apps: fetchedApps, isLoading } = useKitzeApps();\n\n  const apps =\n    customApps || fetchedApps.map((a) => ({ name: a.name, url: a.url }));\n  const filteredApps = excludeApp\n    ? apps.filter((app) => app.name.toLowerCase() !== excludeApp.toLowerCase())\n    : apps;\n\n  const getUrl = (url: string) => {\n    if (!refParam) {\n      return url;\n    }\n    const separator = url.includes(\"?\") ? \"&\" : \"?\";\n    return `${url}${separator}ref=${refParam}`;\n  };\n\n  if (isLoading && !customApps) {\n    return null;\n  }\n\n  return (\n    <div className={cn(\"space-y-4\", className)}>\n      <h4 className=\"flex items-center gap-2 text-sm font-semibold text-white\">\n        {title}\n        <span className=\"text-[10px] font-normal text-zinc-600\">&#8599;</span>\n      </h4>\n      <div className=\"flex flex-col gap-3 text-sm text-zinc-500\">\n        {filteredApps.map((app) => (\n          <a\n            key={app.name}\n            href={getUrl(app.url)}\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n            className=\"group flex cursor-pointer items-center gap-1 transition-colors hover:text-white\"\n          >\n            {app.name}\n            <ExternalLink className=\"h-3 w-3 opacity-0 transition-opacity group-hover:opacity-50\" />\n          </a>\n        ))}\n      </div>\n    </div>\n  );\n};\n",
+          "type": "registry:component",
+          "target": "components/ui/FooterColumnKitzeApps.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "footer-column-connect",
+      "title": "Connect",
+      "description": "My social, support, and website links. Override the list when needed.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/footer-column-connect/FooterColumnConnect.tsx",
+          "content": "\"use client\";\n\nimport { cn } from \"@/lib/utils\";\n\nexport interface ConnectLink {\n  label: string;\n  url: string;\n}\n\nconst defaultLinks: ConnectLink[] = [\n  { label: \"Twitter / X\", url: \"https://x.com/thekitze\" },\n  { label: \"Support\", url: \"mailto:hi@kitze.io\" },\n  { label: \"kitze.io\", url: \"https://kitze.io\" },\n];\n\nexport interface FooterColumnConnectProps {\n  /** Custom links list (overrides default) */\n  links?: ConnectLink[];\n  /** Ref parameter to append to URLs (only for http links) */\n  refParam?: string;\n  /** Custom title */\n  title?: string;\n  /** Additional className */\n  className?: string;\n}\n\nexport const FooterColumnConnect = ({\n  links = defaultLinks,\n  refParam,\n  title = \"Connect\",\n  className,\n}: FooterColumnConnectProps) => {\n  const getUrl = (url: string) => {\n    if (!refParam) {\n      return url;\n    }\n    // Don't add ref to mailto or non-http links\n    if (!url.startsWith(\"http\")) {\n      return url;\n    }\n    const separator = url.includes(\"?\") ? \"&\" : \"?\";\n    return `${url}${separator}ref=${refParam}`;\n  };\n\n  return (\n    <div className={cn(\"space-y-4\", className)}>\n      <h4 className=\"text-sm font-semibold text-white\">{title}</h4>\n      <div className=\"flex flex-col gap-3 text-sm text-zinc-500\">\n        {links.map((link) => (\n          <a\n            key={link.label}\n            href={getUrl(link.url)}\n            target={link.url.startsWith(\"http\") ? \"_blank\" : undefined}\n            rel={\n              link.url.startsWith(\"http\") ? \"noopener noreferrer\" : undefined\n            }\n            className=\"cursor-pointer transition-colors hover:text-white\"\n          >\n            {link.label}\n          </a>\n        ))}\n      </div>\n    </div>\n  );\n};\n",
+          "type": "registry:component",
+          "target": "components/ui/FooterColumnConnect.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "footer-bottom",
+      "title": "Footer attribution",
+      "description": "My copyright line and the built-with-swearing attribution.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/footer-bottom/FooterBottom.tsx",
+          "content": "\"use client\";\n\nimport { cn } from \"@/lib/utils\";\n\nexport interface FooterBottomProps {\n  /** Variant of the \"built by\" text */\n  variant?: \"full\" | \"minimal\";\n  /** Additional className */\n  className?: string;\n}\nexport const FooterBottom = ({\n  variant = \"full\",\n  className,\n}: FooterBottomProps) => (\n  <div\n    className={cn(\n      \"mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 sm:flex-row\",\n      className\n    )}\n  >\n    <div className=\"text-xs text-zinc-600\">\n      © {new Date().getFullYear()} Kitze. All rights reserved.\n    </div>\n    <div className=\"flex items-center gap-2 text-xs text-zinc-600\">\n      {variant === \"full\" ? (\n        <>\n          <span>&quot;Built&quot; by</span>\n          <a\n            href=\"https://x.com/thekitze\"\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n            className=\"cursor-pointer text-zinc-400 transition-colors hover:text-white\"\n          >\n            @thekitze\n          </a>\n          <span>with</span>\n          <span className=\"inline-flex gap-1\">\n            <span>😡</span>\n            <span>&</span>\n            <span>swearing at LLMs</span>\n          </span>\n        </>\n      ) : (\n        <>\n          <span>Made by</span>\n          <a\n            href=\"https://x.com/thekitze\"\n            target=\"_blank\"\n            rel=\"noopener noreferrer\"\n            className=\"cursor-pointer text-zinc-400 transition-colors hover:text-white\"\n          >\n            @thekitze\n          </a>\n        </>\n      )}\n    </div>\n  </div>\n);\n",
+          "type": "registry:component",
+          "target": "components/ui/FooterBottom.tsx"
+        }
+      ],
+      "type": "registry:component"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "kitze-apps-provider",
+      "title": "Apps provider",
+      "description": "Fetch and share the app catalog from kitze.io once per page.",
+      "dependencies": [
+        "zod"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/new-york/kitze-apps-provider/KitzeAppsProvider.tsx",
+          "content": "\"use client\";\n\nimport type { ReactNode } from \"react\";\nimport { createContext, useContext, useEffect, useMemo, useState } from \"react\";\nimport { z } from \"zod\";\n\nexport interface KitzeApp {\n  name: string;\n  tagline: string;\n  description: string;\n  url: string;\n}\nconst projectSchema = z.object({\n  externalUrl: z.string().optional(),\n  subtitle: z.string(),\n  summary: z.string(),\n  title: z.string(),\n});\n\nconst PROJECTS_API_URL = \"https://www.kitze.io/api/projects?apps=true\";\ninterface KitzeAppsContextType {\n  apps: KitzeApp[];\n  isLoading: boolean;\n}\nconst KitzeAppsContext = createContext<KitzeAppsContextType>({\n  apps: [],\n  isLoading: true,\n});\nexport const useKitzeApps = () => useContext(KitzeAppsContext);\ninterface KitzeAppsProviderProps {\n  children: ReactNode;\n}\nexport const KitzeAppsProvider = ({ children }: KitzeAppsProviderProps) => {\n  const [apps, setApps] = useState<KitzeApp[]>([]);\n  const [isLoading, setIsLoading] = useState(true);\n  useEffect(() => {\n    const controller = new AbortController();\n    const loadProjects = async () => {\n      try {\n        const response = await fetch(PROJECTS_API_URL, {\n          signal: controller.signal,\n        });\n        if (!response.ok) {\n          throw new Error(`Projects request failed: ${response.status}`);\n        }\n        const projects = z.array(projectSchema).parse(await response.json());\n        const mapped = projects.flatMap((project) =>\n          project.externalUrl\n            ? [\n                {\n                  description: project.summary,\n                  name: project.title,\n                  tagline: project.subtitle,\n                  url: project.externalUrl,\n                },\n              ]\n            : []\n        );\n        if (!controller.signal.aborted) {\n          setApps(mapped);\n        }\n      } catch (error) {\n        if (!controller.signal.aborted) {\n          console.error(\"Failed to fetch projects:\", error);\n        }\n      } finally {\n        if (!controller.signal.aborted) {\n          setIsLoading(false);\n        }\n      }\n    };\n    void loadProjects();\n    return () => controller.abort();\n  }, []);\n  const contextValue = useMemo(() => ({ apps, isLoading }), [apps, isLoading]);\n  return (\n    <KitzeAppsContext.Provider value={contextValue}>\n      {children}\n    </KitzeAppsContext.Provider>\n  );\n};\n",
+          "type": "registry:component",
+          "target": "components/ui/KitzeAppsProvider.tsx"
+        }
+      ],
+      "type": "registry:component"
+    }
+  ]
+}

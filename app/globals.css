@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@theme inline {
+  --color-background: #111411;
+  --color-foreground: #f4f3e9;
+}
+:root {
+  color-scheme: dark;
+  background: #111411;
+  color: #f4f3e9;
+  font-family: Arial, Helvetica, sans-serif;
+}
+body {
+  margin: 0;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+button {
+  cursor: pointer;
+}
+::selection {
+  background: #c9ed8a;
+  color: #111411;
+}

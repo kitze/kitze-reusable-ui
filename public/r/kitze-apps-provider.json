@@ -1,0 +1,19 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "kitze-apps-provider",
+  "title": "Apps provider",
+  "description": "Fetch and share the app catalog from kitze.io once per page.",
+  "dependencies": [
+    "zod"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/new-york/kitze-apps-provider/KitzeAppsProvider.tsx",
+      "content": "\"use client\";\n\nimport type { ReactNode } from \"react\";\nimport { createContext, useContext, useEffect, useMemo, useState } from \"react\";\nimport { z } from \"zod\";\n\nexport interface KitzeApp {\n  name: string;\n  tagline: string;\n  description: string;\n  url: string;\n}\nconst projectSchema = z.object({\n  externalUrl: z.string().optional(),\n  subtitle: z.string(),\n  summary: z.string(),\n  title: z.string(),\n});\n\nconst PROJECTS_API_URL = \"https://www.kitze.io/api/projects?apps=true\";\ninterface KitzeAppsContextType {\n  apps: KitzeApp[];\n  isLoading: boolean;\n}\nconst KitzeAppsContext = createContext<KitzeAppsContextType>({\n  apps: [],\n  isLoading: true,\n});\nexport const useKitzeApps = () => useContext(KitzeAppsContext);\ninterface KitzeAppsProviderProps {\n  children: ReactNode;\n}\nexport const KitzeAppsProvider = ({ children }: KitzeAppsProviderProps) => {\n  const [apps, setApps] = useState<KitzeApp[]>([]);\n  const [isLoading, setIsLoading] = useState(true);\n  useEffect(() => {\n    const controller = new AbortController();\n    const loadProjects = async () => {\n      try {\n        const response = await fetch(PROJECTS_API_URL, {\n          signal: controller.signal,\n        });\n        if (!response.ok) {\n          throw new Error(`Projects request failed: ${response.status}`);\n        }\n        const projects = z.array(projectSchema).parse(await response.json());\n        const mapped = projects.flatMap((project) =>\n          project.externalUrl\n            ? [\n                {\n                  description: project.summary,\n                  name: project.title,\n                  tagline: project.subtitle,\n                  url: project.externalUrl,\n                },\n              ]\n            : []\n        );\n        if (!controller.signal.aborted) {\n          setApps(mapped);\n        }\n      } catch (error) {\n        if (!controller.signal.aborted) {\n          console.error(\"Failed to fetch projects:\", error);\n        }\n      } finally {\n        if (!controller.signal.aborted) {\n          setIsLoading(false);\n        }\n      }\n    };\n    void loadProjects();\n    return () => controller.abort();\n  }, []);\n  const contextValue = useMemo(() => ({ apps, isLoading }), [apps, isLoading]);\n  return (\n    <KitzeAppsContext.Provider value={contextValue}>\n      {children}\n    </KitzeAppsContext.Provider>\n  );\n};\n",
+      "type": "registry:component",
+      "target": "components/ui/KitzeAppsProvider.tsx"
+    }
+  ],
+  "type": "registry:component"
+}

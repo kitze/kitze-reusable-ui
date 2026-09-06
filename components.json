@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "css": "app/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {
+    "@kitze": "https://ui.kitze.io/r/{name}.json",
+    "@kitze-reusable": "https://kitze.github.io/kitze-reusable-ui/r/{name}.json"
+  }
+}
