@@ -14,7 +14,7 @@ The installer pulls dependencies, including Kitze UI's Spinner, from their origi
 
 ```tsx
 import { KitzeAppsProvider } from "@/components/ui/KitzeAppsProvider";
-import { MadeByKitze } from "@/components/ui/MadeByKitze";
+import { MadeByKitze } from "@/components/MadeByKitze";
 
 export const MakerSection = () => (
   <KitzeAppsProvider>

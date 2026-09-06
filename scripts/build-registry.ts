@@ -25,7 +25,10 @@ const items = await Promise.all(
         {
           content: source,
           path: filePath,
-          target: `components/ui/${item.file}`,
+          target:
+            item.name === "kitze-apps-provider"
+              ? `components/ui/${item.file}`
+              : `components/${item.file}`,
           type: "registry:component",
         },
       ],
